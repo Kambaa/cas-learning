@@ -1,13 +1,13 @@
 version: '3.1'
 services:
-  app:
-    image: apereo/cas:6.6.15
+#  app:
+#    image: apereo/cas:6.6.15
 
-#  postgre_db:
-#    image: hub.epias.com.tr/postgres/postgres@sha256:868a8ec5f24cce648991c8e41811a43acddebdf55aff0b3aad90fab359f2c518
-#    ports:
-#      - 5432:5432
-#    environment:
-#      - POSTGRES_PASSWORD=postgres
-#      - POSTGRES_USER=postgres
-#      - POSTGRES_DB=casdb
+  postgre_db:
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
