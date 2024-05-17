@@ -15,13 +15,13 @@ To build the project, use:
 
 ```bash
 # Use --refresh-dependencies to force-update SNAPSHOT versions
-./gradlew[.bat] clean build
+./gradlew clean build
 ```
 
 To see what commands/tasks are available to the build script, run:
 
 ```bash
-./gradlew[.bat] tasks
+./gradlew tasks
 ```
 
 If you need to, on Linux/Unix systems, you can delete all the existing artifacts
@@ -40,7 +40,7 @@ For the server to run successfully, you might need to create a keystore file.
 This can either be done using the JDK's `keytool` utility or via the following command:
 
 ```bash
-./gradlew[.bat] createKeystore
+./gradlew createKeystore
 ```
 
 Use the password `changeit` for both the keystore and the key/certificate entries. 
@@ -60,7 +60,7 @@ dependencies {
 To collect the list of all project modules and dependencies in the overlay:
 
 ```bash
-./gradlew[.bat] dependencies
+./gradlew dependencies
 ```                                                                       
 
 # Deployment
@@ -84,7 +84,7 @@ java -jar build/libs/cas.war
 Or via:
 
 ```bash
-./gradlew[.bat] run
+./gradlew run
 ```
 
 It is often an advantage to explode the generated web application and run it in unpacked mode.
@@ -102,7 +102,7 @@ running from an unexploded archive. After startup, you should not expect any dif
 Debug the CAS web application as an executable WAR:
 
 ```bash
-./gradlew[.bat] debug
+./gradlew debug
 ```
        
 Or via:
@@ -114,7 +114,7 @@ java -Xdebug -Xrunjdwp:transport=dt_socket,address=5000,server=y,suspend=y -jar 
 Run the CAS web application as a *standalone* executable WAR:
 
 ```bash
-./gradlew[.bat] clean executable
+./gradlew clean executable
 ```
 
 ## External
@@ -127,7 +127,7 @@ Deploy the binary web application file in `build/libs` after a successful build 
 To fetch and overlay a CAS resource or view, use:
 
 ```bash
-./gradlew[.bat] getResource -PresourceName=[resource-name]
+./gradlew getResource -PresourceName=[resource-name]
 ```
 
 # Create User Interface Themes Structure
@@ -135,7 +135,7 @@ To fetch and overlay a CAS resource or view, use:
 You can use the overlay to construct the correct directory structure for custom user interface themes:
 
 ```bash
-./gradlew[.bat] createTheme -Ptheme=redbeard
+./gradlew createTheme -Ptheme=redbeard
 ```
 
 The generated directory structure should match the following:
@@ -162,13 +162,13 @@ and the theme may be assigned to applications for use.
 To list all available CAS views and templates:
 
 ```bash
-./gradlew[.bat] listTemplateViews
+./gradlew listTemplateViews
 ```
 
 To unzip and explode the CAS web application file and the internal resources jar:
 
 ```bash
-./gradlew[.bat] explodeWar
+./gradlew explodeWar
 ```
 
 # Configuration
@@ -176,7 +176,7 @@ To unzip and explode the CAS web application file and the internal resources jar
 - The `etc` directory contains the configuration files and directories that need to be copied to `/etc/cas/config`.
 
 ```bash
-./gradlew[.bat] copyCasConfiguration
+./gradlew copyCasConfiguration
 ```
 
 - The specifics of the build are controlled using the `gradle.properties` file.
