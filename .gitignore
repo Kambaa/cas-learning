@@ -47,4 +47,4 @@ apache-tomcat.zip
 config-metadata.properties
 node-modules
 package-lock.json
-thekeystore
+src/main/resources/config/ssl/
