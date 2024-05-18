@@ -53,7 +53,6 @@ Password: Mellon
 
 - Congrats! You have successfully entered the **CAS** World!
 
-
 ## Configs on Db:
 
 Default behaviour is setup on the projects etc/ dir and use the gradle script to copy to /etc or C:
@@ -116,4 +115,125 @@ cas:
         password: <PASSWORD>
 ```
 
-With the inserted rows, some warnings about key generation will not come again. 
+With the inserted rows, some warnings about key generation will not come again.
+
+## Setting up logging configuration:
+
+Project's default behaviour is to use the `etc/cas/config/log4j2.xml` file at the project
+root, if you copy this to `/etc/cas/config` or `C:/etc/cas/config`, it will override the config.
+
+To use a config file at the project's classpath(`src/main/resources`), simply add a
+configuration to
+the `application.yml`:
+
+```yaml
+logging:
+  config: 'classpath:config/logging/log4j2.xml'
+```
+
+you can modify default configurations according to your needs. For a basic console logging derived
+from the original check out the example below:
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+All loggers are asynchronous because of log42.component.properties in cas-server-core-logging-api.
+Set -Dlog4j2.contextSelector=org.apache.logging.log4j.core.selector.BasicContextSelector or override log42.component.properties to turn off async
+-->
+<!-- Specify the refresh internal in seconds. -->
+<Configuration monitorInterval="5">
+    <Appenders>
+        <Console name="casConsole" target="SYSTEM_OUT">
+            <PatternLayout pattern="%highlight{%d %p [%c] - &lt;%m&gt;%n}"/>
+        </Console>
+        <RollingFile name="casFile" fileName="casconfigserver.log" append="false"
+                     filePattern="cas-%d{yyyy-MM-dd-HH}-%i.log">
+            <PatternLayout pattern="%highlight{%d %p [%c] - &lt;%m&gt;%n}"/>
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+                <TimeBasedTriggeringPolicy/>
+            </Policies>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Logger name="tr.com.epias.cas" level="info" includeLocation="true" additivity="false">
+
+            <AppenderRef ref="casConsole"/>
+        </Logger>
+        <Logger name="org.apereo.cas" level="info" includeLocation="true" additivity="false">
+
+            <AppenderRef ref="casConsole"/>
+        </Logger>
+        <Logger name="org.apereo.cas.authentication.DefaultAuthenticationManager" level="error"
+                includeLocation="true" additivity="false">
+
+            <AppenderRef ref="casConsole"/>
+        </Logger>
+        <Logger name="org.apereo.cas.web.support.AbstractThrottledSubmissionHandlerInterceptorAdapter"
+                level="error" includeLocation="true" additivity="false">
+
+            <AppenderRef ref="casConsole"/>
+        </Logger>
+        <Logger name="org.apereo.cas.DefaultCentralAuthenticationService" level="error"
+                includeLocation="true" additivity="false">
+
+            <AppenderRef ref="casConsole"/>
+        </Logger>
+        <Logger name="org.apereo.cas.logout.DefaultLogoutManager" level="error"
+                includeLocation="true" additivity="false">
+
+            <AppenderRef ref="casConsole"/>
+        </Logger>
+        <Logger name="org.apache" level="info" additivity="false">
+
+            <AppenderRef ref="casConsole"/>
+        </Logger>
+        <Logger name="org.springframework.cloud.server" level="info" additivity="false">
+
+            <AppenderRef ref="casConsole"/>
+        </Logger>
+        <Logger name="org.springframework.cloud.config" level="info" additivity="false">
+
+            <AppenderRef ref="casConsole"/>
+        </Logger>
+        <Logger name="org.springframework.cloud.bus" level="info" additivity="false">
+
+            <AppenderRef ref="casConsole"/>
+        </Logger>
+        <Logger name="org.springframework.cloud.vault" level="warn" additivity="false">
+
+            <AppenderRef ref="casConsole"/>
+        </Logger>
+        <Logger name="org.springframework.security" level="info" additivity="false">
+
+            <AppenderRef ref="casConsole"/>
+        </Logger>
+        <Logger name="org.springframework.boot" level="info" additivity="false">
+
+            <AppenderRef ref="casConsole"/>
+        </Logger>
+        <Logger name="org.springframework.boot.autoconfigure.security" level="info"
+                additivity="false">
+
+            <AppenderRef ref="casConsole"/>
+        </Logger>
+        <Logger name="org.springframework.amqp" level="off" additivity="false">
+
+            <AppenderRef ref="casConsole"/>
+        </Logger>
+        <Logger name="org.springframework.web" level="info" additivity="false">
+
+            <AppenderRef ref="casConsole"/>
+        </Logger>
+        <Logger name="com.hazelcast" level="info" additivity="false">
+
+            <AppenderRef ref="casConsole"/>
+        </Logger>
+        <Root level="error">
+            <AppenderRef ref="casConsole"/>
+        </Root>
+    </Loggers>
+</Configuration>
+```
