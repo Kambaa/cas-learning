@@ -1,3 +1,24 @@
 # Application properties that need to be
 # embedded within the web application can be included here
 
+# Cas ayarlarının veritabanında alınmasını sağlamak adına aşağıdaki ayarları yapıyoruz.
+cas:
+  spring:
+    cloud:
+      jdbc:
+        driver-class: 'org.postgresql.Driver'
+        url: 'jdbc:postgresql://localhost:5432/postgres'
+        user: 'postgres'
+        password: 'postgres'
+
+server:
+  # Cas'ın varsayılan ayarında, bizen /etc ya da C:\etc altında ayarların olmasını beklemektedir.
+  # Bizler bu ayarı proje classpath'inin içindeki config\ssl altından kullanmasını ayarlıyoruz.
+  ssl:
+    key-store-password: changeit
+    key-store: classpath:config/ssl/thekeystore
+    key-password: changeit
+    enabled: true
+
+logging:
+  config: 'classpath:config/logging/log4j2.xml'
