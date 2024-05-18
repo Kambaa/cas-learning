@@ -52,3 +52,68 @@ Password: Mellon
 - Check that you have successfully logged in.
 
 - Congrats! You have successfully entered the **CAS** World!
+
+
+## Configs on Db:
+
+Default behaviour is setup on the projects etc/ dir and use the gradle script to copy to /etc or C:
+\etc before running the app.
+
+First add the dependency on `build.gradle` file under `dependencies`:
+
+```text
+    implementation "org.apereo.cas:cas-server-support-configuration-cloud-jdbc"
+```
+
+And then, generate The Tables On Db(below is postgres):
+
+```sql
+create table if not exists CAS_SETTINGS_TABLE
+(
+    ID          serial
+        constraint cas_settings_pk primary key,
+    NAME        TEXT UNIQUE                       NOT NULL,
+    VALUE       TEXT                              NOT NULL,
+    DESCRIPTION TEXT DEFAULT ('açıklama giriniz') NOT NULL
+);
+
+```
+
+```sql
+INSERT INTO public.cas_settings_table (id, name, value, description)
+VALUES (1, 'cas.tgc.crypto.encryption.key', '<SOMEKEY>',
+        'Generated encryption key [] of size [256] for [Ticket-granting Cookie]. The generated key MUST be added to CAS settings');
+INSERT INTO public.cas_settings_table (id, name, value, description)
+VALUES (2, 'cas.tgc.crypto.signing.key', '<SOMEKEY>', e'Generated signing key [] of size [512] for [Ticket-granting Cookie]. The generated key MUST be added to CAS settings:
+');
+INSERT INTO public.cas_settings_table (id, name, value, description)
+VALUES (3, 'cas.webflow.crypto.signing.key', '<SOMEKEY>',
+        'Generated signing key [] of size [512]. The generated key MUST be added to CAS settings:');
+INSERT INTO public.cas_settings_table (id, name, value, description)
+VALUES (4, 'cas.webflow.crypto.encryption.key', '<SOMEKEY>',
+        'Generated encryption key [] of size [16]. The generated key MUST be added to CAS settings:');
+INSERT INTO public.cas_settings_table (id, name, value, description)
+VALUES (5, 'cas.authn.accept.enabled', 'true',
+        'CAS is configured to accept a static list of credentials for authentication. While this is generally useful for demo purposes, it is STRONGLY recommended that you DISABLE this authentication method by setting ''cas.authn.accept.enabled=false'' and switch to a mode that is more suitable for production.');
+INSERT INTO public.cas_settings_table (id, name, value, description)
+VALUES (6, 'spring.security.user.name', 'demo', 'Spring security secured username');
+INSERT INTO public.cas_settings_table (id, name, value, description)
+VALUES (7, 'spring.security.user.password', 'demo', 'Spring security secured password');
+```
+
+After successful insertion, open the file `<PROJECT_DIR>src/main/resources/application.yml` and add
+these db connection information:
+
+```yml
+# Cas ayarlarının veritabanında alınmasını sağlamak adına aşağıdaki ayarları yapıyoruz.
+cas:
+  spring:
+    cloud:
+      jdbc:
+        driver-class: org.postgresql.Driver
+        url: jdbc:postgresql://localhost:5432/<DBNAME>
+        user: <USERNAME>
+        password: <PASSWORD>
+```
+
+With the inserted rows, some warnings about key generation will not come again. 
