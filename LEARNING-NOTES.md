@@ -237,3 +237,113 @@ Set -Dlog4j2.contextSelector=org.apache.logging.log4j.core.selector.BasicContext
     </Loggers>
 </Configuration>
 ```
+
+## Use Database Authentication:
+
+Project's default behaviour is a static user list, to disable it and authenticate users from a db :
+
+- First add the necessary dependency to `build.gradle`:
+  ```text
+  implementation "org.apereo.cas:cas-server-support-jdbc"
+  implementation "org.apereo.cas:cas-server-support-jdbc-drivers"
+
+  ```
+
+- Next, add the necessary user checking configurations to your settings. Below is written
+  for a java properties file, but for this project it is in the cas_settings_table and these
+  settings need to be put there.
+
+  ```properties
+  # Authenticates a user by comparing the user password (which can be encoded with a password encoder) against the password on record determined by a configurable database query.
+  # https://apereo.github.io/cas/6.6.x/authentication/Database-Authentication.html#query-database-authentication
+  # Required Settings
+  cas.authn.jdbc.query[0].driver-class=org.postgresql.Driver
+  cas.authn.jdbc.query[0].url=jdbc:postgresql://localhost:5432/postgres
+  cas.authn.jdbc.query[0].dialect=org.hibernate.dialect.PostgreSQL95Dialect
+  cas.authn.jdbc.query[0].user=postgres
+  cas.authn.jdbc.query[0].password=postgres
+  cas.authn.jdbc.query[0].sql=SELECT * FROM users WHERE email = ?
+  cas.authn.jdbc.query[0].field-password=password
+  cas.authn.jdbc.query[0].password-encoder.type=NONE
+  # Optional Settings
+  cas.authn.jdbc.query[0].field-expired=expired
+  cas.authn.jdbc.query[0].field-disabled=disabled
+  ```
+
+  Örnek sql insert scripti:
+
+  ```sql
+  INSERT INTO.cas_settings_table (id, name, value, description)
+  VALUES (default, 'cas.authn.jdbc.query[0].driver-class', 'org.postgresql.Driver',
+          'Kullanıcıların bakılacağı veritabanı JDBC bağlantı driver');
+  INSERT INTO.cas_settings_table (id, name, value, description)
+  VALUES (default, 'cas.authn.jdbc.query[0].dialect', 'org.hibernate.dialect.PostgreSQL95Dialect',
+          'Kullanıcıların bakılacağı veritabanı JDBC bağlantı SQL dialect');
+  INSERT INTO.cas_settings_table (id, name, value, description)
+  VALUES (default, 'cas.authn.jdbc.query[0].url', 'jdbc:postgresql://localhost:5432/postgres',
+          'Kullanıcıların bakılacağı veritabanı JDBC bağlantı URL');
+  INSERT INTO.cas_settings_table (id, name, value, description)
+  VALUES (default, 'cas.authn.jdbc.query[0].user', 'postgres',
+          'Kullanıcıların bakılacağı veritabanı JDBC bağlantı kullanıcı adı');
+  INSERT INTO.cas_settings_table (id, name, value, description)
+  VALUES (default, 'cas.authn.jdbc.query[0].password', 'postgres',
+          'Kullanıcıların bakılacağı veritabanı JDBC bağlantı şifresi');
+  INSERT INTO.cas_settings_table (id, name, value, description)
+  VALUES (default, 'cas.authn.jdbc.query[0].sql', 'SELECT * FROM users WHERE email = ?',
+          'Kullanıcıların bakılacağı veritabanı sorgu sql');
+  INSERT INTO.cas_settings_table (id, name, value, description)
+  VALUES (default, 'cas.authn.jdbc.query[0].field-password', 'password',
+          'Kullanıcıların bakılacağı veritabanı tablosundaki karşılaştırılacak şifrelerin bulunduğu kolon');
+  INSERT INTO.cas_settings_table (id, name, value, description)
+  VALUES (default, 'cas.authn.jdbc.query[0].password-encoder.type', 'NONE',
+          'Kullanıcıların bakılacağı veritabanı tablosu şifre kolonundaki değerlerin şifreleme bilgisi');
+  INSERT INTO.cas_settings_table (id, name, value, description)
+  VALUES (default, e'cas.authn.jdbc.query[0].field-expired
+  ', 'expired',
+          'Kullanıcıların bakılacağı veritabanı tablosunda, kullanıcının zaman aşımı(expired) olduğunu belirten kolon adı');
+  INSERT INTO cas_settings_table (id, name, value, description)
+  VALUES (default, 'cas.authn.jdbc.query[0].field-disabled', 'disabled',
+          'Kullanıcıların bakılacağı veritabanı tablosunda, kullanıcının devre dışı(disabled) olduğunu belirten kolon adı');
+  
+  ```
+
+- After that generate a table and add an example user with the example below:
+
+  ```sql
+  CREATE TABLE users
+  (
+      id         bigint NOT NULL,
+      disabled   boolean,
+      email      character varying(40) COLLATE pg_catalog."default",
+      first_name character varying(40) COLLATE pg_catalog."default",
+      last_name  character varying(40) COLLATE pg_catalog."default",
+      expired    boolean,
+      password   character varying(100) COLLATE pg_catalog."default",
+      CONSTRAINT users_pkey PRIMARY KEY (id),
+      CONSTRAINT users_unique_email UNIQUE (email)
+  );
+  INSERT INTO users(id, disabled, email, first_name, last_name, expired, password)
+  VALUES (1, false, 'test@test.com', 'test', 'user1', false,
+          'wasd');
+  ```
+
+- And lastly, restart your application via these commands:
+  Reload dependencies and rebuild the project.
+
+  ```shell
+  ./gradlew clean build --refresh-dependencies  
+  ```
+
+  Run the project.
+
+  ```shell
+  ./gradlew run  
+  ```
+
+  When you go to to https://localhost:8443/cas/login and enter the credentials you've entered to the
+  users table before, you should successfully be authenticated.
+  ### WARNING:
+  User passwords are clearly visible on the database for this example(check out the config key
+  `cas.authn.jdbc.query[0].password-encoder.type` is set to `NONE`), you should read
+  and set up some kind of one-way encryption. Details
+  are [here](https://apereo.github.io/cas/6.6.x/authentication/Database-Authentication.html#query-database-authentication).
