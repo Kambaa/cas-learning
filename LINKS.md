@@ -22,6 +22,15 @@ https://apereo.github.io/cas/6.6.x/configuration/Configuration-Server-Management
 https://apereo.github.io/cas/6.6.x/installation/JDBC-Drivers.html
 
 
+## Multifactor Authentication (MFA)
+https://apereo.github.io/cas/6.6.x/mfa/Configuring-Multifactor-Authentication.html
+## Simple Multifactor Authentication
+https://apereo.github.io/cas/6.6.x/mfa/Simple-Multifactor-Authentication.html
+## Simple Multifactor Authentication - Communication Strategy
+https://apereo.github.io/cas/6.6.x/mfa/Simple-Multifactor-Authentication-Communication.html
+
+
+
 ## REST-Protocol
 https://apereo.github.io/cas/6.6.x/protocol/REST-Protocol-TicketStatus.html
 https://apereo.github.io/cas/6.6.x/protocol/REST-Protocol-CredentialAuthentication.html
@@ -96,3 +105,12 @@ https://apereo.github.io/cas/6.6.x/notifications/Notifications-Configuration.htm
 
 ## Extending CAS Configuration
 https://apereo.github.io/cas/6.6.x/configuration/Configuration-Management-Extensions.html
+
+
+## Authentication Events
+https://apereo.github.io/cas/6.6.x/authentication/Configuring-Authentication-Events.html
+
+## Audits
+https://apereo.github.io/cas/6.6.x/audits/Audits.html
+## Database Audits
+https://apereo.github.io/cas/6.6.x/audits/Audits-Database.html
